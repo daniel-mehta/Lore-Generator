@@ -112,6 +112,7 @@ Each file includes:
 - Python 3.8+
 - Ollama (local LLM runner)
 - Mistral 7B (model)
+- Jupyter Notebook (prototype phase)
 - Visual Studio Code
 
 ---
