@@ -6,11 +6,18 @@ from lore_builder import (
     format_markdown,
     set_seed
 )
-from utils import call_model, save_lore
+from utils import save_lore
 
+st.set_page_config(page_title="Lore Generator", layout="wide")
 st.title("🌍 LLM-Powered Lore Generator")
 st.caption("Build your world. Generate deep lore. Powered by a local LLM.")
 
+# Reset button
+if st.button("🛑 Cancel / Reset"):
+    st.session_state.clear()
+    st.experimental_rerun()
+
+# Form
 with st.form("lore_form"):
     race = st.text_input("Race", "")
     planet = st.text_input("Planet", "")
@@ -32,8 +39,8 @@ with st.form("lore_form"):
 
     submit = st.form_submit_button("✨ Generate Lore")
 
+# Generation logic
 if submit:
-    # Parse and prepare input dict
     inputs = {
         "race": race,
         "planet": planet,
@@ -63,9 +70,14 @@ if submit:
         conflicts = generate_conflicts(culture, government, inputs)
         output_md = format_markdown(inputs, culture, government, conflicts)
 
+        st.session_state["output_md"] = output_md
+        st.session_state["planet"] = planet
+
+# Output
+if "output_md" in st.session_state:
     st.markdown("---")
     st.subheader("📝 Generated Lore")
-    st.markdown(output_md)
+    st.markdown(st.session_state["output_md"])
 
-    save = st.download_button("💾 Download Markdown", output_md, file_name=f"{planet}.md")
-
+    filename = f"{st.session_state['planet'].strip().lower().replace(' ', '_') or 'lore'}.md"
+    st.download_button("💾 Download Markdown", st.session_state["output_md"], file_name=filename)
